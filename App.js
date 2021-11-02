@@ -5,16 +5,12 @@ import { MainScreen } from "./src/screens/MainScreen";
 import { TodoScreen } from "./src/screens/TodoScreen";
 
 export default function App() {
-  const [todoId, setTodoId] = useState("2");
+  const [todoId, setTodoId] = useState(null);
   const [todos, setTodos] = useState([
-    {
-      id: "1",
-      title: "React Native",
-    },
-    {
-      id: "2",
-      title: "React JS",
-    },
+    // {
+    //   id: "1",
+    //   title: "React Native",
+    // },
   ]);
 
   const addTodo = (title) => {
@@ -35,16 +31,16 @@ export default function App() {
       [
         {
           text: "Cancel",
-          // onPress: () => Alert.alert("Cancel Pressed"),
           style: "cancel",
+          // onPress: () => Alert.alert("Cancel Pressed"),
         },
         {
           text: "Delete",
+          style: "destructive",
           onPress: () => {
             setTodoId(null);
             setTodos((prev) => prev.filter((todo) => todo.id !== id));
           },
-          style: "distructive",
         },
       ],
       {
