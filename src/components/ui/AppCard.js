@@ -4,8 +4,8 @@ import { StyleSheet, View } from "react-native";
 export const AppCard = (props) => {
   return (
     <View
-      // style={{ ...styles.default, ...props.style }} //combine styles inside and out
-      style={styles.default}
+      style={[styles.default, props.style]} //combine styles inside and out
+      // style={styles.default}
     >
       {props.children}
     </View>
