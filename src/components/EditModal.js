@@ -7,7 +7,7 @@ import {
   Button,
   Alert,
 } from "react-native";
-import { THEME } from "../../theme";
+import { THEME } from "../theme";
 
 export const EditModal = ({ visible, onCancel, value, onSave }) => {
   const [title, setTitle] = useState(value);
