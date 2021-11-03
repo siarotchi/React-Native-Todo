@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Alert, Button, StyleSheet, TextInput, View } from "react-native";
+import { Alert, StyleSheet, TextInput, View, Keyboard } from "react-native";
 import { THEME } from "../theme";
 import { AntDesign } from "@expo/vector-icons";
 
@@ -10,6 +10,7 @@ export const AddTodo = ({ onSubmit }) => {
     if (value.trim()) {
       onSubmit(value);
       setValue("");
+      Keyboard.dismiss(); //hide keyboard after adding
     } else {
       Alert.alert("Need some text!!!");
     }
