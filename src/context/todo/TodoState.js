@@ -66,20 +66,27 @@ export const TodoState = ({ children }) => {
 
   const fetchTodos = async () => {
     showLoader();
-    const response = await fetch(
-      "https://react-native-todo-4207b-default-rtdb.europe-west1.firebasedatabase.app/posts.json",
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    const data = await response.json();
-    const todos = Object.keys(data).map((key) => ({
-      ...data[key],
-      id: key,
-    }));
-    dispatch({ type: FETCH_TODOS, todos });
-    hideLoader();
+    clearError();
+    try {
+      const response = await fetch(
+        "https://react-native-todo-4207b-default-rtdb.europe-west1.firebasedatabase.app/posts.json",
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const data = await response.json();
+      const todos = Object.keys(data).map((key) => ({
+        ...data[key],
+        id: key,
+      }));
+      dispatch({ type: FETCH_TODOS, todos });
+    } catch (error) {
+      showError("OOPS! Smth goes wrong...");
+      console.log("OOPS! Smth goes wrong...:", error);
+    } finally {
+      hideLoader();
+    }
   };
   const updateTodo = (id, title) => dispatch({ type: UPDATE_TODO, id, title });
   const showLoader = () => dispatch({ type: SHOW_LOADER });
