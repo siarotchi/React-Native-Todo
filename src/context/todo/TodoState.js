@@ -47,13 +47,19 @@ export const TodoState = ({ children }) => {
         {
           text: "Cancel",
           style: "cancel",
-          // onPress: () => Alert.alert("Cancel Pressed"),
         },
         {
           text: "Delete",
           style: "destructive",
-          onPress: () => {
+          onPress: async () => {
             changeScreen(null);
+            await fetch(
+              `https://react-native-todo-4207b-default-rtdb.europe-west1.firebasedatabase.app/posts/${id}.json`,
+              {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+              }
+            );
             dispatch({ type: REMOVE_TODO, id });
           },
         },
@@ -88,7 +94,23 @@ export const TodoState = ({ children }) => {
       hideLoader();
     }
   };
-  const updateTodo = (id, title) => dispatch({ type: UPDATE_TODO, id, title });
+  const updateTodo = async (id, title) => {
+    clearError();
+    try {
+      await fetch(
+        `https://react-native-todo-4207b-default-rtdb.europe-west1.firebasedatabase.app/posts/${id}.json`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title }),
+        }
+      );
+      dispatch({ type: UPDATE_TODO, id, title });
+    } catch (error) {
+      showError("OOPS! Smth goes wrong...");
+      console.log("OOPS! Smth goes wrong...:", error);
+    }
+  };
   const showLoader = () => dispatch({ type: SHOW_LOADER });
   const hideLoader = () => dispatch({ type: HIDE_LOADER });
   const showError = (error) => dispatch({ type: SHOW_ERROR, error });
