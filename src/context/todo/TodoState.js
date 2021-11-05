@@ -13,6 +13,7 @@ import {
 } from "../types";
 import { ScreenContext } from "../screen/screenContext";
 import { Alert } from "react-native";
+import { Http } from "../../http";
 
 export const TodoState = ({ children }) => {
   const initialState = {
@@ -25,16 +26,15 @@ export const TodoState = ({ children }) => {
 
   const addTodo = async (title) => {
     //Work with database from Firebase
-    const response = await fetch(
-      "https://react-native-todo-4207b-default-rtdb.europe-west1.firebasedatabase.app/posts.json",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title }),
-      }
-    );
-    const data = await response.json();
-    dispatch({ type: ADD_TODO, title, id: data.name });
+    try {
+      const data = await Http.post(
+        "https://react-native-todo-4207b-default-rtdb.europe-west1.firebasedatabase.app/posts.json",
+        { title }
+      );
+      dispatch({ type: ADD_TODO, title, id: data.name });
+    } catch (error) {
+      showError("OOPS! Smth goes wrong...");
+    }
   };
   const removeTodo = (id) => {
     const todo = state.todos.find((t) => t.id === id);
@@ -53,13 +53,10 @@ export const TodoState = ({ children }) => {
           style: "destructive",
           onPress: async () => {
             changeScreen(null);
-            await fetch(
-              `https://react-native-todo-4207b-default-rtdb.europe-west1.firebasedatabase.app/posts/${id}.json`,
-              {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-              }
+            await Http.delete(
+              `https://react-native-todo-4207b-default-rtdb.europe-west1.firebasedatabase.app/posts/${id}.json`
             );
+
             dispatch({ type: REMOVE_TODO, id });
           },
         },
@@ -69,23 +66,18 @@ export const TodoState = ({ children }) => {
       }
     );
   };
-
   const fetchTodos = async () => {
     showLoader();
     clearError();
     try {
-      const response = await fetch(
-        "https://react-native-todo-4207b-default-rtdb.europe-west1.firebasedatabase.app/posts.json",
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        }
+      const data = await Http.get(
+        "https://react-native-todo-4207b-default-rtdb.europe-west1.firebasedatabase.app/posts.json"
       );
-      const data = await response.json();
       const todos = Object.keys(data).map((key) => ({
         ...data[key],
         id: key,
       }));
+
       dispatch({ type: FETCH_TODOS, todos });
     } catch (error) {
       showError("OOPS! Smth goes wrong...");
@@ -97,15 +89,11 @@ export const TodoState = ({ children }) => {
   const updateTodo = async (id, title) => {
     clearError();
     try {
-      await fetch(
+      await Http.patch(
         `https://react-native-todo-4207b-default-rtdb.europe-west1.firebasedatabase.app/posts/${id}.json`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title }),
-        }
+        { title }
       );
-      dispatch({ type: UPDATE_TODO, id, title });
+      dispatch({ type: UPDATE_TODO, title, id });
     } catch (error) {
       showError("OOPS! Smth goes wrong...");
       console.log("OOPS! Smth goes wrong...:", error);
